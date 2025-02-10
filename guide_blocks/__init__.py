@@ -1,7 +1,7 @@
-from abc import abstractmethod
-from typing import Dict, Optional, List, Generator
-from dataclasses import dataclass
 import os
+from abc import abstractmethod
+from dataclasses import dataclass
+from typing import Dict, Generator, List, Optional
 
 
 @dataclass
@@ -20,7 +20,8 @@ class GuideBlock:
         if ctx is None:
             ctx = dict()
 
-        if os.environ.get('CI_ENV') and any(isinstance(b(), ManualGuideBlock) for b in blocks):
+        manual_blocks_exist = any(isinstance(b(), ManualGuideBlock) for b in blocks)
+        if os.environ.get("CI_ENV") and manual_blocks_exist:
             raise RuntimeError("Manual steps cannot be run in CI environment")
 
         instantiated_blocks = [b() for b in blocks]
@@ -45,7 +46,9 @@ class GuideBlock:
         return cls.__name__
 
 
-class ManualGuideBlock(GuideBlock): pass
+class ManualGuideBlock(GuideBlock):
+    pass
 
 
-class AutomaticGuideBlock(GuideBlock): pass
+class AutomaticGuideBlock(GuideBlock):
+    pass
